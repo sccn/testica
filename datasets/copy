@@ -1,0 +1,14 @@
+cp /data/common1/stern/eeg/km81/Sternberg/tmp4ica.set km81.set
+cp /data/common1/stern/eeg/jo74/Sternberg/tmp4ica.set jo74.set
+cp /data/common1/stern/eeg/ds76/Sternberg/tmp4ica.set ds76.set
+cp /data/common1/stern/eeg/cj82/Sternberg/tmp4ica.set cj82.set
+cp /data/common1/stern/eeg/ap82/Sternberg/tmp4ica.set ap82.set
+cp /data/common1/stern/eeg/ke70/Sternberg/tmp4ica.set ke70.set
+cp /data/common1/stern/eeg/tp62/Sternberg/tmp4ica.set tp62.set
+cp /data/common1/stern/eeg/cz84/Sternberg/tmp4ica.set cz84.set
+cp /data/common1/stern/eeg/gm84/Sternberg/tmp4ica.set gm84.set
+cp /data/common1/stern/eeg/gv84/Sternberg/tmp4ica2.set gv84.set
+cp /data/common1/stern/eeg/nf68/Sternberg/tmp4ica.set nf68.set
+cp /data/common1/stern/eeg/ds80/Sternberg/tmp4ica.set ds80.set
+cp /data/common1/stern/eeg/kb77/Sternberg/tmp4ica.set kb77.set
+cp /data/common1/stern/eeg/ts79/Sternberg/tmp4ica.set ts79.set

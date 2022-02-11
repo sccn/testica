@@ -1,0 +1,486 @@
+head	1.16;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.16
+date	2003.10.29.16.41.57;	author arno;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2003.10.29.03.42.55;	author arno;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2003.10.29.03.41.30;	author arno;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2003.10.29.03.35.20;	author arno;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2003.09.02.13.01.47;	author roberto;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2003.08.01.13.49.49;	author roberto;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2003.07.29.16.13.36;	author roberto;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2003.06.13.16.48.22;	author arno;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2003.06.13.01.21.19;	author arno;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2003.06.13.01.01.34;	author arno;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.06.13.01.00.40;	author arno;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.03.12.10.32.12;	author roberto;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2003.03.06.15.57.56;	author roberto;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2003.03.04.15.00.49;	author roberto;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.03.03.16.50.22;	author roberto;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2003.02.24.10.02.31;	author roberto;	state Exp;
+branches;
+next	;
+
+
+desc
+@initial submission
+set defaults for dipole fitting
+@
+
+
+1.16
+log
+@default grid
+@
+text
+@% dipfitdefs() - default settings and filenames for dipolefitting 
+%                to source in the ICA/ERP package functions.
+%                Insert local dir reference below. 
+%
+% Note: Edit this file to change local directories under Unix and Windows 
+%
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003
+
+% SMI, University Aalborg, Denmark http://www.smi.auc.dk/
+% FC Donders Centre, University Nijmegen, the Netherlands http://www.fcdonders.kun.nl
+
+% Copyright (C) 2003 Robert Oostenveld, SMI/FCDC roberto@@miba.auc.dk
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+% $Log: dipfitdefs.m,v $
+% Revision 1.15  2003/10/29 03:42:55  arno
+% same
+%
+% Revision 1.14  2003/10/29 03:41:30  arno
+% meanradius
+%
+% Revision 1.13  2003/10/29 03:35:20  arno
+% remove elc computation
+%
+% Revision 1.12  2003/09/02 13:01:47  roberto
+% added default constraint for symmetry
+%
+% Revision 1.11  2003/08/01 13:49:49  roberto
+% removed 1 and 3 sphere defaults, renamed vol4besa to defaultvolume and added origin
+%
+% Revision 1.9  2003/06/13 16:48:22  arno
+% undo chanlocs checks
+%
+% Revision 1.8  2003/06/13 01:21:19  arno
+% still debuging auto conversion
+%
+% Revision 1.7  2003/06/13 01:01:34  arno
+% debug last
+%
+% Revision 1.6  2003/06/13 01:00:40  arno
+% convert polar to carthesian electrode location strcuture
+%
+% Revision 1.5  2003/03/12 10:32:12  roberto
+% added 4-sphere volume model similar to BESA
+%
+% Revision 1.4  2003/03/06 15:57:56  roberto
+% *** empty log message ***
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this file is not a function but a script and is included in the dipfit_XXX functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if ~isfield(EEG, 'chanlocs')
+  error('No electrode locations defined');
+end
+
+if ~isfield(EEG, 'icawinv')
+  error('No ICA components present');
+end
+
+nchan = length(EEG.chanlocs);
+ncomp = size(EEG.icawinv, 2);
+
+% create one-sphere model
+% defaultvolume.r = meanradius;
+% defaultvolume.c = 0.33;
+% defaultvolume.o = [0 0 0];
+
+% create three-sphere model
+% defaultvolume.r = meanradius * [0.0 0.92 0.88];
+% defaultvolume.c = [0.33 0.0042 0.33];
+% defaultvolume.o = [0 0 0];
+
+% create four-sphere model that is identical to the default of besa
+defaultvolume.r = [85-6-7-1 85-6-7 85-6 85];  % in mm
+defaultvolume.c = [0.33 1.00 0.0042 0.33];    % brain/csf/skull/skin
+defaultvolume.o = [0 0 0];
+
+% constrain electrode to sphere
+% -----------------------------
+meanradius = defaultvolume.r(4);
+
+% defaults for GUI pop_dipfit_settings dialog
+defaultelectrodes = sprintf('1:%d', nchan);
+
+% these settings determine the symmetry constraint that can be toggled on
+% for the second dipole
+defaultconstraint.reduce = [1 2 3];
+defaultconstraint.expand = [1 2 3 1 2 3];
+defaultconstraint.mirror = [1 1 1 1 -1 1];
+
+% defaults for GUI pop_dipfit_batch dialogs
+rejectstr    = '40';	% in percent
+xgridstr     = sprintf('linspace(-%d,%d,11)', floor(meanradius), floor(meanradius));
+ygridstr     = sprintf('linspace(-%d,%d,11)', floor(meanradius), floor(meanradius));
+zgridstr     = sprintf('linspace(0,%d,6)', floor(meanradius));
+
+@
+
+
+1.15
+log
+@same
+@
+text
+@d29 3
+d108 3
+a110 3
+xgridstr     = sprintf('linspace(-%d,%d,10)', floor(meanradius), floor(meanradius));
+ygridstr     = sprintf('linspace(-%d,%d,10)', floor(meanradius), floor(meanradius));
+zgridstr     = sprintf('linspace(0,%d,5)', floor(meanradius));
+@
+
+
+1.14
+log
+@meanradius
+@
+text
+@d29 3
+a74 8
+try,
+    elc = cell2mat({chanlocs.X; chanlocs.Y; chanlocs.Z}');
+catch
+    disp('No 3-D carthesian coordinates; re-computing them from 2-D polar coordinates');
+    EEG.chanlocs = convertlocs(EEG.chanlocs, 'topo2all');
+    elc = cell2mat({chanlocs.X; chanlocs.Y; chanlocs.Z}');
+end;
+
+@
+
+
+1.13
+log
+@remove elc computation
+@
+text
+@d29 3
+d72 8
+d95 4
+@
+
+
+1.12
+log
+@added default constraint for symmetry
+@
+text
+@d29 3
+a68 15
+% collect the present electrode positions in a usefull format
+elc = cell2mat({EEG.chanlocs(:).X; EEG.chanlocs(:).Y; EEG.chanlocs(:).Z}');
+
+% compute electrode radius for standard spherical volume conductor models 
+radius = zeros(nchan,1);
+for i=1:nchan
+  % determine the radius of each individual electrode
+  radius(i) = norm(elc(i,:));
+end
+meanradius = mean(radius);
+for i=1:nchan
+  % project all electrodes on the sphere
+  elc(i,:) = meanradius * elc(i,:) / radius(i);
+end
+
+@
+
+
+1.11
+log
+@removed 1 and 3 sphere defaults, renamed vol4besa to defaultvolume and added origin
+@
+text
+@d29 3
+d98 6
+a103 5
+% REMOVE THIS -> OBSOLETE
+% defaultvolume = strvcat('four spheres (identical to BESA)', ...
+%                         'single sphere (fitted to electrodes)', ...
+%                         'three spheres (fitted to electrodes)', ...
+% 			'realistic headmodel (ICBM collin27)');
+@
+
+
+1.10
+log
+@fixed bug in vol4besa (flipped csf and skull)
+@
+text
+@d79 3
+a81 2
+vol1.r = meanradius;
+vol1.c = 0.33;
+d84 3
+a86 2
+vol3.r = meanradius * [0.0 0.92 0.88];
+vol3.c = [0.33 0.0042 0.33];
+d89 3
+a91 2
+vol4besa.r = [85-6-7-1 85-6-7 85-6 85];  % in mm
+vol4besa.c = [0.33 1.00 0.0042 0.33];    % brain/csf/skull/skin
+d95 5
+a99 4
+defaultvolume = strvcat('four spheres (identical to BESA)', ...
+                        'single sphere (fitted to electrodes)', ...
+                        'three spheres (fitted to electrodes)', ...
+			'realistic headmodel (ICBM collin27)');
+@
+
+
+1.9
+log
+@undo chanlocs checks
+@
+text
+@d29 3
+d88 1
+a88 1
+vol4besa.c = [0.33 0.0042 1.00 0.33];
+@
+
+
+1.8
+log
+@still debuging auto conversion
+@
+text
+@d29 3
+a60 3
+if ~isfield(EEG.chanlocs, 'X') | isempty(EEG.chanlocs(1).X)
+    EEG.chanlocs = convertlocs(EEG.chanlocs, 'topo2all');
+end;
+@
+
+
+1.7
+log
+@debug last
+@
+text
+@d29 3
+d58 1
+a58 1
+if ~isfield(EEG.chanlocs, 'X')
+@
+
+
+1.6
+log
+@convert polar to carthesian electrode location strcuture
+@
+text
+@d29 3
+d55 1
+a55 1
+if ~isfield(EEG.chanlocs, X)
+@
+
+
+1.5
+log
+@added 4-sphere volume model similar to BESA
+@
+text
+@d29 3
+d52 3
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d29 3
+d71 4
+d77 2
+a78 1
+defaultvolume = strvcat('single sphere (fitted to electrodes)', ...
+@
+
+
+1.3
+log
+@1-sphere and 3-sphere model simultaneous
+support for chanlocs instead of dipfit.elc
+support for BEM added
+@
+text
+@d75 1
+a75 1
+rejectstr    = '0.40';
+@
+
+
+1.2
+log
+@automatic grid creation based on sphere size
+@
+text
+@d28 6
+d38 1
+a38 1
+if ~isfield(EEG, 'chanlocs')
+d45 2
+a46 14
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DEFAULT: collect the present electrode positions in a usefull format
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+for i=1:nchan
+  elec.pos(i,1) = EEG.chanlocs(i).X;
+  elec.pos(i,2) = EEG.chanlocs(i).Y;
+  elec.pos(i,3) = EEG.chanlocs(i).Z;
+  elec.label{i} = EEG.chanlocs(i).labels;
+end
+
+% it might be neccesary here to make a subselection of channels that are
+% present in both the EEG data and in the electrode definition
+
+elc = elec.pos;
+d48 1
+a48 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DEFAULT: construct a spherical volume conductor model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+a59 1
+% FIXME, this is much faster for testing purposes but a poor approximation of a real head
+d61 2
+a62 2
+vol.r = meanradius;
+vol.c = 0.33;
+d65 8
+a72 2
+% vol.r = meanradius * [0.0 0.92 0.88];
+% vol.c = [0.33 0.0042 0.33];
+d74 1
+a74 8
+% defaults for GUI dialogs
+componentstr = sprintf('%d:%d', 1, ncomp);
+volumestr    = '<builtin sphere>';
+electrodestr = '<default>';
+referencestr = '<average reference>';
+xgridstr     = sprintf('linspace(-%d,%d,10)', floor(min(vol.r)), floor(min(vol.r)));
+ygridstr     = sprintf('linspace(-%d,%d,10)', floor(min(vol.r)), floor(min(vol.r)));
+zgridstr     = sprintf('linspace(0,%d,5)', floor(min(vol.r)));
+d76 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a38 10
+% defaults for GUI dialogs
+componentstr = sprintf('%d:%d', 1, ncomp);
+volumestr    = '<builtin sphere>';
+electrodestr = '<default>';
+referencestr = '<average reference>';
+xgridstr     = 'linspace(-9,9,10)';
+ygridstr     = 'linspace(-9,9,10)';
+zgridstr     = 'linspace(0,8,5)';
+rejectstr    = '0.40';
+
+d68 1
+a68 1
+% FIXME, this is much faster for testing purposes but a poor model
+d74 1
+a74 1
+% vol.r = meanradius * [1.0 0.92 0.88];
+d77 10
+@

@@ -1,0 +1,681 @@
+head	1.16;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.16
+date	2003.12.04.18.09.05;	author arno;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2003.10.31.08.18.25;	author roberto;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2003.10.14.16.08.04;	author roberto;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2003.10.14.15.39.47;	author roberto;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2003.10.09.02.33.44;	author arno;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2003.10.09.02.30.14;	author arno;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2003.10.09.02.29.31;	author arno;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2003.10.09.02.28.08;	author arno;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2003.10.09.02.18.18;	author arno;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2003.10.09.01.19.22;	author arno;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.06.30.01.42.18;	author arno;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.06.30.01.39.58;	author arno;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2003.03.06.15.57.37;	author roberto;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2003.03.04.15.00.21;	author roberto;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.03.03.16.50.56;	author roberto;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2003.02.24.10.03.13;	author roberto;	state Exp;
+branches;
+next	;
+
+
+desc
+@initial submission
+@
+
+
+1.16
+log
+@matlab 5.3 compatibility
+@
+text
+@% dipfit_batch() - do initial batch-like dipole scan and fit to all 
+%                  data components and return a dipole model with a 
+%                  single dipole for each component
+% 
+% Usage: 
+%  >> model = dipfit_batch(data, elc, vol, varargin)
+%
+% Inputs:
+%   data    - matrix with all ICA components
+%   elc     - electrode positions
+%   vol     - volume conductor model
+%
+% Optional inputs:
+%   'xgrid'   - vector with floats, grid positions along x-axis
+%   'ygrid'   - vector with floats, grid positions along y-axis
+%   'zgrid'   - vector with floats, grid positions along z-axis
+%   'ngrid'   - integer, default number of grid positions in each direction
+%   'waitbar' - ['gui'|'none'] default 'gui'.
+%   'save'    - [string] save forward solutions in file given as input
+%   'load'    - [string] load forward solutions in file given as input
+%               this assumes that the channel location and the current 
+%               volume conductor model  are identical to those used to
+%               generate the file.
+%
+% Output:
+%   model	- struct array with a dipole model for each component
+%
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003, load/save by
+%         Arnaud Delorme
+
+% SMI, University Aalborg, Denmark http://www.smi.auc.dk/
+% FC Donders Centre, University Nijmegen, the Netherlands http://www.fcdonders.kun.nl
+
+% Copyright (C) 2003 Robert Oostenveld, SMI/FCDC roberto@@miba.auc.dk
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+% $Log: dipfit_batch.m,v $
+% Revision 1.15  2003/10/31 08:18:25  roberto
+% changed the waitbar color into eeglab blue
+%
+% Revision 1.14  2003/10/14 16:08:04  roberto
+% renamed grid.posxyz into pos for backward compatibility
+%
+% Revision 1.13  2003/10/14 15:39:47  roberto
+% removed dependency on private eeg_dipole_scan
+% reimplemented scanning for RV and single dipole
+% reimplemented load/save of precomputed grid
+%
+% Revision 1.12  2003/10/09 02:33:44  arno
+% same
+%
+% Revision 1.11  2003/10/09 02:30:14  arno
+% same
+%
+% Revision 1.10  2003/10/09 02:29:31  arno
+% save
+%
+% Revision 1.9  2003/10/09 02:28:08  arno
+% partial save abord
+%
+% Revision 1.8  2003/10/09 02:18:18  arno
+% cell array input problem
+%
+% Revision 1.7  2003/10/09 01:19:22  arno
+% implementing additional options
+%
+% Revision 1.6  2003/06/30 01:42:18  arno
+% waitbar -> feedback
+%
+% Revision 1.5  2003/06/30 01:39:58  arno
+% waitbar argument
+%
+% Revision 1.4  2003/03/06 15:57:37  roberto
+% *** empty log message ***
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function model = dipfit_batch(data, elc, vol, varargin)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% convert the optional arguments into a structure, which is easier to handle
+if nargin>3
+    for index = 1:length(varargin)
+        if iscell(varargin{index})
+            varargin{index} = {varargin{index}};
+        end;
+    end;
+    optarg = struct(varargin{:});
+else
+  optarg = [];
+end
+
+% process the optional arguments
+if isfield(optarg, 'ngrid')
+  ngrid = optarg.ngrid;
+else
+  ngrid = 15;
+end
+if isfield(optarg, 'xgrid')
+  xgrid = optarg.xgrid;
+else
+  xgrid = [];	% will be assigned the default value later on
+end
+if isfield(optarg, 'ygrid')
+  ygrid = optarg.ygrid;
+else
+  ygrid = [];	% will be assigned the default value later on
+end
+if isfield(optarg, 'zgrid')
+  zgrid = optarg.zgrid;
+else
+  zgrid = [];	% will be assigned the default value later on
+end
+if isfield(optarg, 'waitbar') & strcmp(optarg.waitbar, 'none')
+    waitbarflag = 0;
+else
+    waitbarflag = 1;
+end;
+loadflag = isfield(optarg, 'load');
+saveflag = isfield(optarg, 'save');
+
+if ~loadflag
+  % create a grid
+  if isempty(xgrid) | isempty(ygrid) | isempty(zgrid) 
+    % create defaults for the grid along each axis
+    if isfield(vol, 'r')
+      % spherical model, use innermost sphere diameter to define scan space
+        brain_radius = min(vol.r);
+        if isfield(vol, 'o')
+          % the center of the sphere is not in the origin
+          brain_center = vol.o;
+        else
+          brain_center = [0 0 0];
+        end
+      xmin = brain_center(1) - brain_radius; xmax = brain_center(1) + brain_radius;
+      ymin = brain_center(2) - brain_radius; ymax = brain_center(2) + brain_radius;
+      zmin = brain_center(3) - brain_radius; zmax = brain_center(3) + brain_radius;
+      clear brain_radius brain_center
+    elseif isfield(vol, 'bnd')
+      % BEM model, use the dimensions of the brain surface to define scan space
+      % FIXME, implement this at a later time
+    end
+    if isempty(xgrid), xgrid = linspace(xmin, xmax, ngrid); end
+    if isempty(ygrid), ygrid = linspace(ymin, ymax, ngrid); end
+    if isempty(zgrid), zgrid = linspace(zmin, zmax, ngrid); end
+    clear xmin xmax ymin ymax zmin zmax
+  end
+  % create the regular grid with dipole positions
+  [X, Y, Z] = meshgrid(xgrid, ygrid, zgrid);
+  grid.pos = [X(:), Y(:), Z(:)];
+  % select only those grid positions that are inside the brain
+  [inside, outside] = find_inside_vol(grid.pos, vol);
+  grid.pos = grid.pos(inside,:);
+else
+  % read the grid and precomputed inverted leadfield from an external file
+  load(optarg.load);
+end
+
+% assign the output, start with an empty model for each component
+for comp=1:size(data,2)
+  model(comp).posxyz = [];
+  model(comp).momxyz = [];
+  model(comp).rv     = inf;
+end
+
+if waitbarflag
+  % get the defaults for the GUI
+  icadefs;
+  try 
+      waitbarhandle = waitbar(0, 'Scanning ...', 'CreateCancelBtn', 'delete(gcbf); error(''USER ABORT'');', 'Color', BACKEEGLABCOLOR);
+  catch % for Matlab 5.3
+      waitbarhandle = waitbar(0, 'Scanning ...');
+  end;   
+end
+
+% compute the residual variance for each component and grid location
+nchan  = size(data,1);
+ndip   = size(grid.pos,1);
+data   = avgref(data);
+sumsqr = sum(data.^2,1);
+for dip=1:size(grid.pos,1)
+  if waitbarflag
+    waitbar(dip/ndip, waitbarhandle);
+  end
+
+  if loadflag
+    % use the precomputed inverse leadfield that was stored along with the grid
+    lfi = grid.lfi{dip};
+  else
+    lf  = avgref(eeg_leadfield(grid.pos(dip,:), elc, vol));
+    lfi = pinv(lf);
+  end
+
+  if saveflag
+    % store the computed inverse leadfield together with the grid so that it can be saved
+    grid.lfi{dip} = lfi;
+  end
+
+  rv = sum(((eye(nchan) - lf*lfi) * data) .^2, 1) ./ sumsqr;
+  for comp=1:size(data,2)
+    if rv(comp) < model(comp).rv 
+      % this position has a lower residual variance that the present model
+      model(comp).rv     = rv(comp);
+      model(comp).posxyz = grid.pos(dip,:);
+      model(comp).momxyz = lfi*data(:,comp);	% recompute dipole moment
+      model(comp).momxyz = model(comp).momxyz';	% and make it a row vector
+    end
+  end
+end
+
+if saveflag
+  % save the grid together with the precomputed inverse leadfields to an external file
+  save(optarg.save, 'grid');
+end
+
+if waitbarflag & ishandle(waitbarhandle)
+  delete(waitbarhandle);
+end
+
+@
+
+
+1.15
+log
+@changed the waitbar color into eeglab blue
+@
+text
+@d51 3
+d182 5
+a186 1
+  waitbarhandle = waitbar(0, 'Scanning ...', 'CreateCancelBtn', 'delete(gcbf); error(''USER ABORT'');', 'Color', BACKEEGLABCOLOR);
+@
+
+
+1.14
+log
+@renamed grid.posxyz into pos for backward compatibility
+@
+text
+@d51 3
+d177 3
+a179 1
+  waitbarhandle = waitbar(0, 'Scanning ...', 'CreateCancelBtn', 'delete(gcbf); error(''USER ABORT'');');
+@
+
+
+1.13
+log
+@removed dependency on private eeg_dipole_scan
+reimplemented scanning for RV and single dipole
+reimplemented load/save of precomputed grid
+@
+text
+@d51 5
+d157 1
+a157 1
+  grid.posxyz = [X(:), Y(:), Z(:)];
+d159 2
+a160 2
+  [inside, outside] = find_inside_vol(grid.posxyz, vol);
+  grid.posxyz = grid.posxyz(inside,:);
+d179 1
+a179 1
+ndip   = size(grid.posxyz,1);
+d182 1
+a182 1
+for dip=1:size(grid.posxyz,1)
+d191 1
+a191 1
+    lf  = avgref(eeg_leadfield(grid.posxyz(dip,:), elc, vol));
+d205 1
+a205 1
+      model(comp).posxyz = grid.posxyz(dip,:);
+@
+
+
+1.12
+log
+@same
+@
+text
+@d9 1
+a9 1
+%   data	- matrix with all ICA components
+d14 10
+a23 14
+%   'xgrid'	- vector with floats, grid positions along x-axis
+%   'ygrid'	- vector with floats, grid positions along y-axis
+%   'zgrid'	- vector with floats, grid positions along z-axis
+%   'ngrid'	- integer, default number of grid positions in each direction
+%   'symmetry'	- single char, symmetry axis for scanning with dipole pair
+%   'waitbar'	- ['gui'|'none'] default 'gui'.
+%   'method'- ['rv'|'dics'|'lcmv'] see eeg_dipole_scan. Default is 'rv'.
+%   'save'  - [string] save forward solutions in file given as input
+%             {string beg end} allow to save the solution for an index
+%             range in [beg end].
+%   'load'  - [string] load forward solutions in file given as input
+%             this assumes that the channel location and the current 
+%             volume conductor model  are identical to those used to
+%             generate the file.
+d51 3
+d99 1
+a99 1
+  ngrid = 5;
+a105 5
+if isfield(optarg, 'waitbar')
+    waitbarflag = optarg.waitbar;
+else
+    waitbarflag = 'gui';
+end;
+d116 4
+a119 17
+if isfield(optarg, 'symmetry')
+  error('scanning with a symmetric dipole pair not yet supported');
+  symmetry = optarg.symmetry;
+else
+  symmetry = [];	% no symmetry
+end
+scanopts = {};
+if isfield(optarg, 'save')
+    scanopts = { scanopts{:} 'save' optarg.save };
+end;
+if isfield(optarg, 'load')
+    scanopts = { scanopts{:} 'load' optarg.load };
+end;
+if isfield(optarg, 'method')
+    scanopts = { scanopts{:} 'method' optarg.method };
+else 
+    scanopts = { scanopts{:} 'method' 'rv' };
+d121 2
+d124 25
+a148 18
+if isempty(xgrid) | isempty(ygrid) | isempty(zgrid) 
+  % create defaults for the grid along each axis
+  if isfield(vol, 'r')
+    % spherical model, use innermost sphere diameter to define scan space
+      brain_radius = min(vol.r);
+      if isfield(vol, 'o')
+        % the center of the sphere is not in the origin
+        brain_center = vol.o;
+      else
+        brain_center = [0 0 0];
+      end
+    xmin = brain_center(1) - brain_radius; xmax = brain_center(1) + brain_radius;
+    ymin = brain_center(2) - brain_radius; ymax = brain_center(2) + brain_radius;
+    zmin = brain_center(3) - brain_radius; zmax = brain_center(3) + brain_radius;
+    clear brain_radius brain_center
+  elseif isfield(vol, 'bnd')
+    % spherical model, use the outside dimensions of the brain surface to define scan space
+    % FIXME, implement at later time
+d150 17
+a166 13
+  if isempty(xgrid), xgrid = linspace(xmin, xmax, ngrid); end
+  if isempty(ygrid), ygrid = linspace(ymin, ymax, ngrid); end
+  if isempty(zgrid), zgrid = linspace(zmin, zmax, ngrid); end
+  clear xmin xmax ymin ymax zmin zmax
+end
+
+% create a regular grid with dipole positions
+[X, Y, Z] = meshgrid(xgrid, ygrid, zgrid);
+grid.pos = [X(:), Y(:), Z(:)];
+
+% create a regular grid with dipole positions
+[X, Y, Z] = meshgrid(xgrid, ygrid, zgrid);
+grid.pos = [X(:), Y(:), Z(:)];
+d168 3
+a170 2
+% select all ICA components as fittable
+select = 1:size(data,2);
+d173 8
+a180 2
+scanopts = { scanopts{:} 'feedback' waitbarflag };
+[tmp, grid] = eeg_dipole_scan(grid, data(:, select), elc, vol, scanopts{:});
+d182 32
+a213 16
+if isfield(optarg, 'save') & ~isstr(optarg.save) & length(optarg.save) > 1
+    disp('Abording dipfit_batch'); model = []; return;
+end;
+    
+% assign the output, start with an empty structure array
+model(size(data,2)).posxyz = [];
+model(size(data,2)).momxyz = [];
+model(size(data,2)).rv     = [];
+for i=1:length(select)
+  comp = select(i);
+  [minval, minindx]  = min(grid.rv_time(:,comp));
+  % minindx is the dipole position where this component has the minimal RV
+  model(comp).posxyz = grid.pos(minindx, :);
+  mom = grid.mom{minindx};
+  model(comp).momxyz = mom(:,comp)';
+  model(comp).rv     = grid.rv_time(minindx, comp);
+@
+
+
+1.11
+log
+@same
+@
+text
+@d55 3
+d181 1
+a181 1
+if ~isstr(optarg.save) & length(optarg.save) > 1
+@
+
+
+1.10
+log
+@save
+@
+text
+@d55 3
+d179 1
+a179 1
+    disp('Abording dipfit_batch'); return;
+@
+
+
+1.9
+log
+@partial save abord
+@
+text
+@d55 3
+d176 1
+a176 1
+    disp('Abording dipfit_batch');
+@
+
+
+1.8
+log
+@cell array input problem
+@
+text
+@d55 3
+d172 4
+@
+
+
+1.7
+log
+@implementing additional options
+@
+text
+@d55 3
+d74 6
+a79 1
+  optarg = struct(varargin{:});
+@
+
+
+1.6
+log
+@waitbar -> feedback
+@
+text
+@d20 8
+d32 2
+a33 1
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003
+d55 3
+d108 12
+d158 2
+a159 1
+[tmp, grid] = eeg_dipole_scan(grid, data(:, select), elc, vol, 'method', 'rv', 'feedback', waitbarflag);
+@
+
+
+1.5
+log
+@waitbar argument
+@
+text
+@d19 1
+a19 1
+%   'waitbar'	- ['on'|'off'] default 'on'.
+d46 3
+d78 1
+a78 1
+    waitbarflag = 'on';
+d134 1
+a134 1
+[tmp, grid] = eeg_dipole_scan(grid, data(:, select), elc, vol, 'method', 'rv', 'waitbar', waitbarflag);
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d9 3
+a11 3
+%   data	matrix with all ICA components
+%   elc         electrode positions
+%   vol         volume conductor model
+d14 6
+a19 5
+%   'xgrid'	vector with floats, grid positions along x-axis
+%   'ygrid'	vector with floats, grid positions along y-axis
+%   'zgrid'	vector with floats, grid positions along z-axis
+%   'ngrid'	integer, default number of grid positions in each direction
+%   'symmetry'	single char, symmetry axis for scanning with dipole pair
+d22 1
+a22 1
+%   model	struct array with a dipole model for each component
+d46 3
+d72 5
+d131 1
+a131 1
+[tmp, grid] = eeg_dipole_scan(grid, data(:, select), elc, vol, 'method', 'rv');
+@
+
+
+1.3
+log
+@support for BEM
+changed from elc to chanlocs
+@
+text
+@@
+
+
+1.2
+log
+@modified for posxyz/momxyz instead of dip.pos/dip.mom
+@
+text
+@a13 1
+%   'component'	vector with integers (default is all)
+d44 2
+a57 5
+if isfield(optarg, 'component')
+  component = sort(optarg.component);
+else
+  component = 1:size(data, 2);
+end
+d118 3
+d122 1
+a122 1
+grid.rv = eeg_dipole_scan(grid, data(:, component), elc, vol, 'method', 'rv_time');
+d128 4
+a131 3
+for i=1:length(component)
+  comp = component(i);
+  [minval, minindx]  = min(grid.rv(:,i));
+d133 3
+a135 2
+  model(comp).momxyz = [NaN NaN NaN];	% FIXME, should be recalculated somewhere
+  model(comp).rv     = grid.rv(minindx, i);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d126 3
+a128 2
+model(size(data,2)).dip = [];
+model(size(data,2)).rv  = [];
+d131 4
+a134 4
+  [minval, minindx]   = min(grid.rv(:,i));
+  model(comp).dip.pos = grid.pos(minindx, :);
+  model(comp).dip.mom = [0 0 0]';	% FIXME, should be recalculated somewhere
+  model(comp).rv      = grid.rv(minindx, i);
+@

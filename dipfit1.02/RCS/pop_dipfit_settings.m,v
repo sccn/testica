@@ -1,0 +1,1431 @@
+head	1.28;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.28
+date	2005.03.17.00.34.57;	author arno;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2004.01.07.17.02.48;	author scott;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2004.01.07.17.01.32;	author scott;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2004.01.07.17.00.21;	author scott;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2003.12.04.18.25.43;	author arno;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2003.10.31.18.06.07;	author arno;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2003.10.31.17.54.00;	author arno;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2003.10.30.02.14.51;	author arno;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2003.10.29.22.43.37;	author arno;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2003.10.29.02.36.38;	author arno;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2003.10.15.14.47.34;	author roberto;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2003.10.14.15.56.38;	author roberto;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2003.08.08.16.57.10;	author arno;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2003.08.04.22.10.13;	author arno;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2003.08.04.22.03.32;	author arno;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2003.08.01.13.50.51;	author roberto;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2003.07.01.22.11.59;	author arno;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2003.06.30.02.11.37;	author arno;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2003.06.30.01.20.58;	author arno;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2003.06.30.01.18.46;	author arno;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2003.06.30.01.16.44;	author arno;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2003.06.30.01.10.49;	author arno;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.06.17.15.26.22;	author arno;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.06.16.15.32.51;	author arno;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2003.03.12.10.32.50;	author roberto;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2003.03.06.15.58.28;	author roberto;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.03.04.15.03.05;	author roberto;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2003.02.24.10.06.08;	author roberto;	state Exp;
+branches;
+next	;
+
+
+desc
+@initial submission
+@
+
+
+1.28
+log
+@fix selection
+@
+text
+@% pop_dipfit_settings() - interactively change the global settings for dipole fitting
+%
+% Usage:
+%   >> OUTEEG = pop_dipfit_settings ( INEEG ); % pop up window
+%   >> OUTEEG = pop_dipfit_settings ( INEEG, 'key1', 'val1', 'key2', 'val2' ... )
+%
+% Inputs:
+%   INEEG	input dataset
+%
+% Optional inputs:
+%   'radii'        - [float array] radii values for the model above.
+%                    Default is [] (uses default)
+%   'conductances' - [float array] conductance values for the model above.
+%                    Default is [] (uses default)
+%   'electrodes'   - [integer array] indices of electrode to include
+%                    in model. Default: all.
+%
+% Outputs:
+%   OUTEEG	output dataset
+%
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003
+%         Arnaud Delorme, SCCN, La Jolla 2003
+
+% SMI, University Aalborg, Denmark http://www.smi.auc.dk/
+% FC Donders Centre, University Nijmegen, the Netherlands http://www.fcdonders.kun.nl
+
+% Copyright (C) 2003 Robert Oostenveld, SMI/FCDC roberto@@miba.auc.dk
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+% $Log: pop_dipfit_settings.m,v $
+% Revision 1.27  2004/01/07 17:02:48  scott
+% See List -> List
+%
+% Revision 1.26  2004/01/07 17:01:32  scott
+% ... -> See List
+%
+% Revision 1.25  2004/01/07 17:00:21  scott
+% added to Note
+%
+% Revision 1.24  2003/12/04 18:25:43  arno
+% shell conductance unit
+%
+% Revision 1.23  2003/10/31 18:06:07  arno
+% more edits
+%
+% Revision 1.22  2003/10/31 17:54:00  arno
+% select channels -> omit channels
+%
+% Revision 1.21  2003/10/30 02:14:51  arno
+% gui typo
+%
+% Revision 1.20  2003/10/29 22:43:37  arno
+% wording
+%
+% Revision 1.19  2003/10/29 02:36:38  arno
+% removing 2 lines of GUI
+%
+% Revision 1.18  2003/10/15 14:47:34  roberto
+% removed urchanlocs from electrode projection part
+%
+% Revision 1.17  2003/10/14 15:56:38  roberto
+% before projecting electrodes towards the skin, store the original in urchanlocs
+%
+% Revision 1.16  2003/08/08 16:57:10  arno
+% removing normsphere
+%
+% Revision 1.15  2003/08/04 22:10:13  arno
+% adding warning backtrace
+%
+% Revision 1.14  2003/08/04 22:03:32  arno
+% adding normsphere option
+%
+% Revision 1.13  2003/08/01 13:50:51  roberto
+% changed the gui, implemented fit-electrodes-to-sphere, modifications in vol.r/c/o are accepter
+%
+% Revision 1.12  2003/07/01 22:11:59  arno
+% removing debug message
+%
+% Revision 1.11  2003/06/30 02:11:37  arno
+% debug argument check
+%
+% Revision 1.10  2003/06/30 01:20:58  arno
+% 4sphere -> 4spheres
+%
+% Revision 1.9  2003/06/30 01:18:46  arno
+% copying new version
+%
+% Revision 1.5  2003/06/16 15:32:51  arno
+% reprograming interface, programing history
+%
+% Revision 1.4  2003/03/12 10:32:50  roberto
+% added 4-sphere volume model similar to BESA
+%
+% Revision 1.3  2003/03/06 15:58:28  roberto
+% *** empty log message ***
+%
+% Revision 1.1  2003/02/24 10:06:08  roberto
+% Initial revision
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [OUTEEG, com] = pop_dipfit_settings ( EEG, varargin )
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if nargin < 1
+   help pop_dipfit_settings;
+   return;
+end;
+
+OUTEEG = EEG;
+com = '';
+
+% get the default values and filenames
+dipfitdefs;
+
+if nargin < 2
+    % define the callbacks for the buttons
+    cb_selectelectrodes = 'tmp = select_channel_list({EEG.chanlocs.label}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])'; % did not work
+    cb_selectelectrodes = 'set(findobj(gcbf, ''tag'', ''elec''), ''string'', int2str(pop_chansel({EEG.chanlocs.labels})));';
+    % cb_selectvolume     = '[fname, pname] = uigetfile(''*.*'', ''Load volume conductor''); fname = fullfile(pname, fname); tmp = strvcat(get(findobj(gcbf, ''tag'', ''vol''), ''string''), fname); set(findobj(gcbf, ''tag'', ''vol''), ''string'', tmp); set(findobj(gcbf, ''tag'', ''vol''), ''value'', size(tmp,1)); set(gcbf, ''userdata'', tmp)';
+    cb_volmodel = [ 'tmpdat = get(gcbf, ''userdata'');' ... 
+                    'tmpind = get(gcbo, ''value'');' ... 
+                    'set(findobj(gcbf, ''tag'', ''radii''),   ''string'', num2str(tmpdat{tmpind}.r,3));' ...
+                    'set(findobj(gcbf, ''tag'', ''conduct''), ''string'', num2str(tmpdat{tmpind}.c,3));' ...
+                    'clear tmpdat tmpind;' ];
+    cb_changeradii = [  'tmpdat = get(gcbf, ''userdata'');' ...
+                       'tmpdat.vol.r = str2num(get(gcbo, ''string''));' ...
+                       'set(gcf, ''userdata'', tmpdat)' ];
+    cb_changeconduct = [  'tmpdat = get(gcbf, ''userdata'');' ...
+                       'tmpdat.vol.c = str2num(get(gcbo, ''string''));' ...
+                       'set(gcf, ''userdata'', tmpdat)' ];
+    cb_changeorigin = [  'tmpdat = get(gcbf, ''userdata'');' ...
+                       'tmpdat.vol.o = str2num(get(gcbo, ''string''));' ...
+                       'set(gcf, ''userdata'', tmpdat)' ];
+    % cb_fitelec = [ 'if get(gcbo, ''value''),' ...
+    %                '  set(findobj(gcbf, ''tag'', ''origin''), ''enable'', ''off'');' ...
+    %                'else' ...
+    %                '  set(findobj(gcbf, ''tag'', ''origin''), ''enable'', ''on'');' ...
+    %                'end;' ];
+    
+    userdata    = [];
+    
+    geomvert = [1 1 1 1 1 1 1];
+    
+    geomhorz = {
+        [1]
+        [1 1.3]
+        [1 1.3]
+        [1.28 1 0.6]
+        [1]
+        [1]
+        [1]
+               };
+    
+    % define each individual graphical user element
+    elements  = { ...
+        { 'style' 'text'        'string' 'Volume conductor model (brain CVF skull skin):' }  ...
+        { 'style' 'text'        'string' 'Shell radii (mm)' }  ...
+        { 'style' 'edit'        'string'  num2str(defaultvolume.r,3) 'tag' 'radii' 'callback', cb_changeradii} ...
+        { 'style' 'text'        'string' 'Shell conductances (S/m)' }  ...
+        { 'style' 'edit'        'string'  num2str(defaultvolume.c,3) 'tag' 'conduct' 'callback', cb_changeconduct} ...
+        { 'style' 'text'        'string' 'Omit channels for dipole fit' } ...
+        { 'style' 'edit'        'string' ''  'tag' 'elec' } ...
+        { 'style' 'pushbutton'  'string' 'List' 'callback' cb_selectelectrodes } ... 
+        { } ...
+        { 'style' 'text'        'string' 'Note: Under menu item ''Edit > Channel locations,'' use the ''3-D Center''' }  ...
+        { 'style' 'text'        'string' 'button to fit the center of the spherical head model before fitting dipoles.' } ...
+                };
+    
+    result = inputgui( geomhorz, elements, 'pophelp(''pop_dipfit_settings'')', ...
+                                     'Dipole fit settings - pop_dipfit_settings()', userdata, 'normal', geomvert );
+    
+    if isempty(result), return; end
+    options = {};
+    options = { options{:} 'radii'        str2num(result{1}) };
+    options = { options{:} 'conductances' str2num(result{2}) };
+    options = { options{:} 'electrodes'   setdiff(1:EEG.nbchan, str2num(result{3})) };
+
+else
+    options = varargin;
+end
+
+g = finputcheck( options, { 'radii'        'float'     []             [defaultvolume.r];
+                            'conductances' 'float'     []             [defaultvolume.c];
+                            'origin'       'float'     []             [defaultvolume.o];
+                            'projectelectrodes' 'integer' [0 1]       [0];
+                            'electrodes'   'integer'   [1 Inf]        [1:EEG.nbchan]});
+if isstr(g), error(g); end;
+
+% remember the volume conductor and electrode settings
+OUTEEG.dipfit.chansel = g.electrodes;
+OUTEEG.dipfit.vol.r   = g.radii;
+OUTEEG.dipfit.vol.c   = g.conductances;
+OUTEEG.dipfit.vol.o   = defaultvolume.o;
+
+if g.projectelectrodes & isfield(EEG, 'chanlocs')
+  if isfield(OUTEEG.chanlocs, 'X') & isfield(OUTEEG.chanlocs, 'Y') & isfield(OUTEEG.chanlocs, 'Z')
+    % here we have the option to remember the original channel locations
+    % but it is not decided yet upon where to put them
+    % OUTEEG.urchanlocs = OUTEEG.chanlocs;
+
+    % project the electrodes towards the skin
+    for el = 1:length(EEG.chanlocs)
+      xyz(1) = OUTEEG.chanlocs(el).X;
+      xyz(2) = OUTEEG.chanlocs(el).Y;
+      xyz(3) = OUTEEG.chanlocs(el).Z;
+      xyz = xyz - g.origin;
+      xyz = max(g.radii) * xyz / norm(xyz);
+      xyz = xyz + g.origin;
+      OUTEEG.chanlocs(el).X = xyz(1);
+      OUTEEG.chanlocs(el).Y = xyz(2);
+      OUTEEG.chanlocs(el).Z = xyz(3);
+    end
+    OUTEEG.chanlocs = convertlocs(OUTEEG.chanlocs, 'cart2all');
+  else
+    error('could not project electrodes because carthesian coordinates are not available');
+  end
+else 
+    warning off backtrace; % avoid long error messages
+end
+
+com = sprintf('%s = pop_dipfit_settings( %s, %s);', inputname(1), inputname(1), vararg2str(options));
+@
+
+
+1.27
+log
+@See List -> List
+@
+text
+@d44 3
+d132 1
+a132 1
+    cb_selectelectrodes = 'set(findobj(gcbf, ''tag'', ''elec''), ''string'', int2str(pop_chansel(EEG.chanlocs)));';
+@
+
+
+1.26
+log
+@... -> See List
+@
+text
+@d44 3
+d174 1
+a174 1
+        { 'style' 'pushbutton'  'string' 'See List' 'callback' cb_selectelectrodes } ... 
+@
+
+
+1.25
+log
+@added to Note
+@
+text
+@d44 3
+d171 1
+a171 1
+        { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectelectrodes } ... 
+@
+
+
+1.24
+log
+@shell conductance unit
+@
+text
+@d44 3
+d171 1
+a171 1
+        { 'style' 'text'        'string' 'button to fit the center of the spherical head model.' } ...
+@
+
+
+1.23
+log
+@more edits
+@
+text
+@d44 3
+d161 1
+a161 1
+        { 'style' 'text'        'string' 'Shell conductances (uf)' }  ...
+@
+
+
+1.22
+log
+@select channels -> omit channels
+@
+text
+@d44 3
+d156 1
+a156 1
+        { 'style' 'text'        'string' 'Radii' }  ...
+d158 1
+a158 1
+        { 'style' 'text'        'string' 'Conductances' }  ...
+@
+
+
+1.21
+log
+@gui typo
+@
+text
+@d44 3
+d113 2
+a114 1
+    cb_selectelectrodes = 'tmp = select_channel_list({EEG.chanlocs.label}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+d155 1
+a155 1
+        { 'style' 'text'        'string' 'Conductance' }  ...
+d157 2
+a158 2
+        { 'style' 'text'        'string' 'Electrodes used for dipole fit' } ...
+        { 'style' 'edit'        'string' defaultelectrodes  'tag' 'elec' } ...
+d161 2
+a162 2
+        { 'style' 'text'        'string' 'Note: did you set or optimize the 3-D center. Use menu Edit > Channel location' }  ...
+        { 'style' 'text'        'string' 'and press the button "3-D center" to do so' } ...
+d166 1
+a166 1
+                                     'Dipole fit settings', userdata, 'normal', geomvert );
+d172 1
+a172 1
+    options = { options{:} 'electrodes'   str2num(result{3}) };
+@
+
+
+1.20
+log
+@wording
+@
+text
+@d44 3
+d153 1
+a153 1
+        { 'style' 'text'        'string' 'Electrodes used for dipolefit' } ...
+@
+
+
+1.19
+log
+@removing 2 lines of GUI
+@
+text
+@d44 3
+d145 1
+a145 1
+        { 'style' 'text'        'string' 'Volume conductor model:' }  ...
+@
+
+
+1.18
+log
+@removed urchanlocs from electrode projection part
+@
+text
+@a14 4
+%   'origin'       - [float array] 3-D location of center of sphere.
+%                    Default is [] (uses default)
+%   'projectelectrodes'  - [boolean value] project electrode to the skin surface
+%                    of the model. Default is 0, meaning no.
+d44 3
+d134 3
+a136 2
+        [1 1.3]
+        [1 1.3]
+a137 1
+        [1.3 1 0.6]
+a146 5
+        { 'style' 'text'        'string' 'Center of sphere' }  ...
+        { 'style' 'edit'        'string'  num2str(defaultvolume.o,3) 'tag' 'origin' 'callback', cb_changeorigin} ...
+        { } ...
+        { 'style' 'checkbox'    'string'  'Fit electrodes to sphere' } ...
+        { } ...
+d149 4
+a152 1
+        { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectelectrodes } ...
+d162 1
+a162 3
+    options = { options{:} 'origin'       str2num(result{3}) };
+    options = { options{:} 'projectelectrodes' result{4} };
+    options = { options{:} 'electrodes'   str2num(result{5}) };
+d179 1
+a179 1
+OUTEEG.dipfit.vol.o   = g.origin;
+@
+
+
+1.17
+log
+@before projecting electrodes towards the skin, store the original in urchanlocs
+@
+text
+@d48 3
+d188 4
+a191 2
+    % remember the original channel locations
+    OUTEEG.urchanlocs = OUTEEG.chanlocs;
+@
+
+
+1.16
+log
+@removing normsphere
+@
+text
+@d48 3
+d184 4
+a187 1
+  if isfield(EEG.chanlocs, 'X') & isfield(EEG.chanlocs, 'Y') & isfield(EEG.chanlocs, 'Z')
+@
+
+
+1.15
+log
+@adding warning backtrace
+@
+text
+@a18 2
+%   'normsphere'   - [boolean value] normalize electrode sphere radius to head
+%                    raidus. Default is 1, meaning yes.
+d48 3
+d123 1
+a123 1
+    geomvert = [1 1 1 1 1 1 1 1];
+a130 1
+        [1 1.3]
+a146 2
+        { 'style' 'checkbox'    'string'  'Fit electrode sphere to head radius' 'value' 1 } ...
+        { } ...
+d161 1
+a161 2
+    options = { options{:} 'normsphere'   result{5} };
+    options = { options{:} 'electrodes'   str2num(result{6}) };
+a170 1
+                            'normsphere'   'integer'   [0 1]          [0];
+a191 1
+      OUTEEG.chanlocs = convertlocs(OUTEEG.chanlocs, 'cart2all');
+d193 1
+a196 7
+end
+
+if g.normsphere
+    for el = 1:length(EEG.chanlocs)
+        OUTEEG.chanlocs(el).sph_radius = g.radii(end);
+    end;
+    OUTEEG.chanlocs = convertlocs(OUTEEG.chanlocs, 'sph2all');
+d199 1
+a199 1
+end;
+@
+
+
+1.14
+log
+@adding normsphere option
+@
+text
+@d50 3
+d208 2
+@
+
+
+1.13
+log
+@changed the gui, implemented fit-electrodes-to-sphere, modifications in vol.r/c/o are accepter
+@
+text
+@d18 3
+a20 1
+%                    of the model model. Default is 0, meaning no.
+d50 3
+d95 1
+a95 1
+    cb_selectelectrodes = 'tmp = select_channel_list({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+d119 1
+a119 1
+    geomvert = [1 1 1 1 1 1 1];
+d127 1
+d144 2
+d160 2
+a161 1
+    options = { options{:} 'electrodes'   str2num(result{5}) };
+d171 1
+d193 1
+d200 7
+@
+
+
+1.12
+log
+@removing debug message
+@
+text
+@a10 2
+%   'model'        - ['1sphere'|'3spheres'|'4spheres'] volumde conductor
+%                    model. Default is '4sphere' equivalent to BESA.
+d15 4
+a20 3
+%   'center'       - [float array] 3-D center location. Default is [0 0 0]
+%                    if empty, the algorithm uses the sphere that
+%                    best matches the electrode location.
+d48 3
+d90 1
+a90 1
+    cb_selectelectrodes = 'tmp = select_multiple_dlg({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+d97 14
+a110 5
+    cb_fitelec = [ 'if get(gcbo, ''value''),' ...
+                   '  set(findobj(gcbf, ''tag'', ''center''), ''enable'', ''off'');' ...
+                   'else' ...
+                   '  set(findobj(gcbf, ''tag'', ''center''), ''enable'', ''on'');' ...
+                   'end;' ];
+d112 1
+a112 1
+    userdata    = { vol4besa vol1 vol3 };
+d114 1
+a114 1
+    geomvert = [2 1 1 1 1 1];
+d117 2
+a123 1
+        [1.3 1 0.6]
+d128 3
+a130 4
+        { 'style' 'text'        'string' strvcat('Volume conductor model', ' ') }  ...
+        { 'style' 'listbox'     'string' defaultvolume(1:3,:) 'value' 1 'tag' 'vol' 'callback' cb_volmodel } ...
+        { 'style' 'text'        'string' 'Radii (mm)' }  ...
+        { 'style' 'edit'        'string' num2str(vol4besa.r,3) 'tag' 'radii' } ...
+d132 5
+a136 1
+        { 'style' 'edit'        'string'  num2str(vol4besa.c,3) 'tag' 'conduct' } ...
+a137 3
+        { 'style' 'text'        'string' '3-D center' }  ...
+        { 'style' 'edit'        'string'  '0 0 0' 'tag' 'center' } ...
+        { 'style' 'checkbox'    'string'  'Fit elect.' 'callback' cb_fitelec } ...
+a141 1
+    %              { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectvolume } ...
+a146 1
+    
+d148 6
+a153 17
+    switch  result{1},
+        case 1, options = { options{:} 'model' '4spheres' }; tmpr = vol4besa.r; tmpc = vol4besa.c; 
+        case 2, options = { options{:} 'model' '1sphere' }; tmpr = vol1.r; tmpc = vol1.c; 
+        case 3, options = { options{:} 'model' '3spheres' }; tmpr = vol3.r; tmpc = vol3.c; 
+    end;
+    if any( str2num(result{2}) ~= tmpr )
+        options = { options{:} 'radii' str2num(result{2}) };
+    end; 
+    if any( str2num(result{3}) ~= tmpc )
+        options = { options{:} 'conductances' str2num(result{3}) };
+    end;
+    if result{5}
+        options = { options{:} 'center' [] };
+    else
+        options = { options{:} 'center' str2num(result{4}) };
+    end;
+    options = { options{:} 'electrodes' str2num(result{6}) };
+d156 1
+a156 1
+end;
+d158 5
+a162 5
+g = finputcheck( options, { 'model'        'string'    { '1sphere' '3spheres' '4spheres' }   '4spheres';
+                            'radii'        'float'     []                                  [];
+                            'conductances' 'float'     []                                  [];
+                            'center'       'float'     []                                  [0 0 0];
+                            'electrodes'   'integer'   [1 Inf]                             [1:EEG.nbchan]});
+d165 1
+a165 14
+switch g.model,
+ case '1sphere', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol1.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol1.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+ case '3spheres', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol3.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol3.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+ case '4spheres', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol4besa.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol4besa.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+ otherwise error('Wrong model name');
+end;
+
+% remember the electrode selection
+d167 21
+a187 1
+OUTEEG.dipfit.center  = g.center;
+a189 34
+
+  % load the default boundary element headmodel (based on ICMB collin27)
+%  tmp = load('icbm27_headmodel');
+%  vol = tmp.vol;
+%else
+%  % userdata contains the elements of the volume conductor listbox
+%  fname = deblank(userdata(outparam{2}, :));
+%  tmp = load(fname);
+%  vol = tmp.vol;
+%end   
+%if isfield(vol, 'bnd')
+  % this is a volume conductor model based on the boundary element method
+  % compute linear interpolation matrix to get the potential on the electrodes
+  % this is only done once, and the matrix is stored with the headmodel
+  % it will then automatically be used in the forward computation
+%  fprintf(2, 'computing transfer from skin surface to electrodes...');
+%  skin = find_outermost_boundary(vol.bnd);
+%  [el] = project_elec(elc, vol.bnd(skin).pnt, vol.bnd(skin).tri);
+%  tra = transfer_elec(vol.bnd(skin).pnt, vol.bnd(skin).tri, el);
+  % construct the transfer from all surfaces combined to the electrodes
+%  vol.tra = [];
+%  for i=1:length(vol.bnd);
+%    if i==skin
+%      % add the computed transfer matrix (skin surface to electrodes)
+%      vol.tra = [vol.tra tra];
+%    else
+%      % add a zero transfer matrix (non-skin surface to electrodes)
+%      vol.tra = [vol.tra zeros(size(tra,1), size(vol.bnd(i).pnt,1))];
+%    end
+%  end
+%  fprintf(2, '\n');
+%end
+
+
+@
+
+
+1.11
+log
+@debug argument check
+@
+text
+@d49 3
+a142 1
+    str2num(result{2}) ~= tmpr
+@
+
+
+1.10
+log
+@4sphere -> 4spheres
+@
+text
+@d49 3
+d174 1
+@
+
+
+1.9
+log
+@copying new version
+@
+text
+@d11 1
+a11 1
+%   'model'        - ['1sphere'|'3sphere'|'4sphere'] volumde conductor
+d49 3
+d133 1
+a133 1
+        case 1, options = { options{:} 'model' '4sphere' }; tmpr = vol4besa.r; tmpc = vol4besa.c; 
+d135 1
+a135 1
+        case 3, options = { options{:} 'model' '3sphere' }; tmpr = vol3.r; tmpc = vol3.c; 
+d154 1
+a154 1
+g = finputcheck( options, { 'model'        'string'    { '1sphere' '3sphere' '4sphere' }   '4sphere';
+d165 1
+a165 1
+ case '2sphere', 
+d168 1
+a168 1
+ case '4sphere', 
+@
+
+
+1.8
+log
+@nothing
+@
+text
+@d1 208
+a208 152
+% pop_dipfit_settings() - interactively change the global settings for dipole fitting
+%
+% Usage:
+%   >> OUTEEG = pop_dipfit_settings ( INEEG, optarg )
+%
+% Inputs:
+%   INEEG	input dataset
+%
+% Outputs:
+%   OUTEEG	output dataset
+%
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003
+
+% SMI, University Aalborg, Denmark http://www.smi.auc.dk/
+% FC Donders Centre, University Nijmegen, the Netherlands http://www.fcdonders.kun.nl
+
+% Copyright (C) 2003 Robert Oostenveld, SMI/FCDC roberto@@miba.auc.dk
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+% $Log: pop_dipfit_settings.m,v $
+% Revision 1.7  2003/06/30 01:10:49  arno
+% new version with history
+%
+% Revision 1.4  2003/03/12 10:32:50  roberto
+% added 4-sphere volume model similar to BESA
+%
+% Revision 1.3  2003/03/06 15:58:28  roberto
+% *** empty log message ***
+%
+% Revision 1.1  2003/02/24 10:06:08  roberto
+% Initial revision
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [OUTEEG, com] = pop_dipfit_settings ( EEG, varargin )
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if nargin < 1
+   help pop_dipfit_settings;
+   return;
+end;
+
+EEG = eeg_checkset(EEG, 'chanlocs_homogenous');
+OUTEEG = EEG;
+com = '';
+
+% get the default values and filenames
+dipfitdefs;
+
+% define the callbacks for the buttons
+cb_selectelectrodes = 'tmp = select_multiple_dlg({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+cb_select1 = '';
+cb_select3 = '';
+cb_fit1 = '';
+cb_fit3 = '';
+cb_select4 = '';
+cb_selectcustom = '';
+cb_selectfile = '';
+
+geomvert = [1 1 1 1 1 1 1 1 1 1 1 1 1];
+
+geomhorz = {
+             [1 2 0.3]
+             [1 0.3 1 1]	% 1 sphere
+             [1 0.3 1 1]	% 3 spheres
+             [1 0.3 1 1]	% 4 spheres besa
+             [1 0.3 1 1]	% custom spheres
+             [2 1 2]	% number
+             [2 1 2]	% origin
+             [2.4 1 0.7 1 0.7]	% sphere 1 radius and cond
+             [2.4 1 0.7 1 0.7]	% sphere 2 radius and cond
+             [2.4 1 0.7 1 0.7]	% sphere 3 radius and cond
+             [2.4 1 0.7 1 0.7]	% sphere 4 radius and cond
+             [1 0.3 2/3 2/3 2/3]	% from file
+	   };
+
+% define each individual graphical user element
+elements  = { ...
+              { 'style' 'text' 'string' 'Electrodes used for dipolefit' } ...
+              { 'style' 'edit' 'string' defaultelectrodes  'tag' 'elec' } ...
+              { 'style' 'pushbutton' 'string' '...' 'callback' cb_selectelectrodes } ...
+              ...
+              { 'style' 'text' 'string' 'Volume conductor model' }  ...
+              { 'style' 'checkbox' 'tag' 'select1' 'callback' cb_select1  } ...
+              { 'style' 'text' 'string' 'Single sphere'} ...
+              { 'style' 'pushbutton' 'string' 'Fit to electrodes' 'callback' cb_fit1} ...
+              ...
+              { } ...
+              { 'style' 'checkbox' 'tag' 'select1' 'callback' cb_select3 } ...
+              { 'style' 'text' 'string' 'Three spheres'} ...
+              { 'style' 'pushbutton' 'string' 'Fit to electrodes' 'callback' cb_fit3} ...
+              ...
+              { } ...
+              { 'style' 'checkbox' 'tag' 'select4' 'callback' cb_select4 } ...
+              { 'style' 'text' 'string' 'Four spheres (identical to BESA)'} ...
+              { } ...
+              { } ...
+              { 'style' 'checkbox' 'tag' 'selectc' 'callback' cb_selectcustom } ...
+              { 'style' 'text' 'string' 'Custom spherical model'} ...
+              { } ...
+              { } ...
+              { 'style' 'text' 'string' 'Number of spheres'} ...
+              { 'style' 'edit' 'string' '3' } ...
+              { } ...
+              { 'style' 'text' 'string' 'Origin of spheres (mm)'} ...
+              { 'style' 'edit' 'string' '[0 0 0]' } ...
+              { } ...
+              { 'style' 'text' 'string' '1) radius (mm)'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { 'style' 'text' 'string' 'conductivity'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { } ...
+              { 'style' 'text' 'string' '2) radius (mm)'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { 'style' 'text' 'string' 'conductivity'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { } ...
+              { 'style' 'text' 'string' '3) radius (mm)'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { 'style' 'text' 'string' 'conductivity'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { } ...
+              { 'style' 'text' 'string' '4) radius (mm)'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { 'style' 'text' 'string' 'conductivity'} ...
+              { 'style' 'edit' 'string' '0' } ...
+              { } ...
+              { 'style' 'checkbox' 'tag' 'selectf' 'callback' cb_selectfile } ...
+              { 'style' 'text' 'string' 'Model from file'} ...
+              { 'style' 'edit' 'string' ''} ...
+              { 'style' 'pushbutton' 'string' 'select file...'} ...
+            };
+
+[outparam, userdata] = inputgui( geomhorz, elements, [], 'Dipole fit settings', [], 'normal', geomvert );
+
+if isempty(outparam)
+  % the user pressed cancel
+  return
+end
+@
+
+
+1.7
+log
+@new version with history
+@
+text
+@d34 3
+d56 1
+@
+
+
+1.6
+log
+@changing select_channel_list call
+@
+text
+@d1 148
+a148 208
+% pop_dipfit_settings() - interactively change the global settings for dipole fitting
+%
+% Usage:
+%   >> OUTEEG = pop_dipfit_settings ( INEEG ); % pop up window
+%   >> OUTEEG = pop_dipfit_settings ( INEEG, 'key1', 'val1', 'key2', 'val2' ... )
+%
+% Inputs:
+%   INEEG	input dataset
+%
+% Optional inputs:
+%   'model'        - ['1sphere'|'3sphere'|'4sphere'] volumde conductor
+%                    model. Default is '4sphere' equivalent to BESA.
+%   'radii'        - [float array] radii values for the model above.
+%                    Default is [] (uses default)
+%   'conductances' - [float array] conductance values for the model above.
+%                    Default is [] (uses default)
+%   'electrodes'   - [integer array] indices of electrode to include
+%                    in model. Default: all.
+%   'center'       - [float array] 3-D center location. Default is [0 0 0]
+%                    if empty, the algorithm uses the sphere that
+%                    best matches the electrode location.
+%
+% Outputs:
+%   OUTEEG	output dataset
+%
+% Author: Robert Oostenveld, SMI/FCDC, Nijmegen 2003
+%         Arnaud Delorme, SCCN, La Jolla 2003
+
+% SMI, University Aalborg, Denmark http://www.smi.auc.dk/
+% FC Donders Centre, University Nijmegen, the Netherlands http://www.fcdonders.kun.nl
+
+% Copyright (C) 2003 Robert Oostenveld, SMI/FCDC roberto@@miba.auc.dk
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+% $Log: pop_dipfit_settings.m,v $
+% Revision 1.5  2003/06/16 15:32:51  arno
+% reprograming interface, programing history
+%
+% Revision 1.4  2003/03/12 10:32:50  roberto
+% added 4-sphere volume model similar to BESA
+%
+% Revision 1.3  2003/03/06 15:58:28  roberto
+% *** empty log message ***
+%
+% Revision 1.1  2003/02/24 10:06:08  roberto
+% Initial revision
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [OUTEEG, com] = pop_dipfit_settings ( EEG, varargin )
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if nargin < 1
+   help pop_dipfit_settings;
+   return;
+end;
+
+OUTEEG = EEG;
+com = '';
+
+% get the default values and filenames
+dipfitdefs;
+
+if nargin < 2
+    % define the callbacks for the buttons
+    cb_selectelectrodes = 'tmp = select_channel_list({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+    % cb_selectvolume     = '[fname, pname] = uigetfile(''*.*'', ''Load volume conductor''); fname = fullfile(pname, fname); tmp = strvcat(get(findobj(gcbf, ''tag'', ''vol''), ''string''), fname); set(findobj(gcbf, ''tag'', ''vol''), ''string'', tmp); set(findobj(gcbf, ''tag'', ''vol''), ''value'', size(tmp,1)); set(gcbf, ''userdata'', tmp)';
+    cb_volmodel = [ 'tmpdat = get(gcbf, ''userdata'');' ... 
+                    'tmpind = get(gcbo, ''value'');' ... 
+                    'set(findobj(gcbf, ''tag'', ''radii''),   ''string'', num2str(tmpdat{tmpind}.r,3));' ...
+                    'set(findobj(gcbf, ''tag'', ''conduct''), ''string'', num2str(tmpdat{tmpind}.c,3));' ...
+                    'clear tmpdat tmpind;' ];
+    cb_fitelec = [ 'if get(gcbo, ''value''),' ...
+                   '  set(findobj(gcbf, ''tag'', ''center''), ''enable'', ''off'');' ...
+                   'else' ...
+                   '  set(findobj(gcbf, ''tag'', ''center''), ''enable'', ''on'');' ...
+                   'end;' ];
+    
+    userdata    = { vol4besa vol1 vol3 };
+    
+    geomvert = [2 1 1 1 1 1];
+    
+    geomhorz = {
+        [1 1.3]
+        [1 1.3]
+        [1 1.3]
+        [1]
+        [1.3 1 0.6]
+        [1.3 1 0.6]
+               };
+    
+    % define each individual graphical user element
+    elements  = { ...
+        { 'style' 'text'        'string' strvcat('Volume conductor model', ' ') }  ...
+        { 'style' 'listbox'     'string' defaultvolume(1:3,:) 'value' 1 'tag' 'vol' 'callback' cb_volmodel } ...
+        { 'style' 'text'        'string' 'Radii (mm)' }  ...
+        { 'style' 'edit'        'string' num2str(vol4besa.r,3) 'tag' 'radii' } ...
+        { 'style' 'text'        'string' 'Conductance' }  ...
+        { 'style' 'edit'        'string'  num2str(vol4besa.c,3) 'tag' 'conduct' } ...
+        { } ...
+        { 'style' 'text'        'string' '3-D center' }  ...
+        { 'style' 'edit'        'string'  '0 0 0' 'tag' 'center' } ...
+        { 'style' 'checkbox'    'string'  'Fit elect.' 'callback' cb_fitelec } ...
+        { 'style' 'text'        'string' 'Electrodes used for dipolefit' } ...
+        { 'style' 'edit'        'string' defaultelectrodes  'tag' 'elec' } ...
+        { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectelectrodes } ...
+                };
+    %              { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectvolume } ...
+    
+    result = inputgui( geomhorz, elements, 'pophelp(''pop_dipfit_settings'')', ...
+                                     'Dipole fit settings', userdata, 'normal', geomvert );
+    
+    if isempty(result), return; end
+    
+    options = {};
+    switch  result{1},
+        case 1, options = { options{:} 'model' '4sphere' }; tmpr = vol4besa.r; tmpc = vol4besa.c; 
+        case 2, options = { options{:} 'model' '1sphere' }; tmpr = vol1.r; tmpc = vol1.c; 
+        case 3, options = { options{:} 'model' '3sphere' }; tmpr = vol3.r; tmpc = vol3.c; 
+    end;
+    str2num(result{2}) ~= tmpr
+    if any( str2num(result{2}) ~= tmpr )
+        options = { options{:} 'radii' str2num(result{2}) };
+    end; 
+    if any( str2num(result{3}) ~= tmpc )
+        options = { options{:} 'conductances' str2num(result{3}) };
+    end;
+    if result{5}
+        options = { options{:} 'center' [] };
+    else
+        options = { options{:} 'center' str2num(result{4}) };
+    end;
+    options = { options{:} 'electrodes' str2num(result{6}) };
+else
+    options = varargin;
+end;
+
+g = finputcheck( options, { 'model'        'string'    { '1sphere' '3sphere' '4sphere' }   '4sphere';
+                            'radii'        'float'     []                                  [];
+                            'conductances' 'float'     []                                  [];
+                            'center'       'float'     []                                  [0 0 0];
+                            'electrodes'   'integer'   [1 Inf]                             [1:EEG.nbchan]});
+if isstr(g), error(g); end;
+
+switch g.model,
+ case '1sphere', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol1.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol1.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+ case '2sphere', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol3.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol3.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+ case '4sphere', 
+  if isempty(g.radii),        OUTEEG.dipfit.vol.r = vol4besa.r; else OUTEEG.dipfit.vol.r = g.radii; end;
+  if isempty(g.conductances), OUTEEG.dipfit.vol.c = vol4besa.c; else OUTEEG.dipfit.vol.c = g.conductances; end;
+end;
+
+% remember the electrode selection
+OUTEEG.dipfit.chansel = g.electrodes;
+OUTEEG.dipfit.center  = g.center;
+
+com = sprintf('%s = pop_dipfit_settings( %s, %s);', inputname(1), inputname(1), vararg2str(options));
+
+  % load the default boundary element headmodel (based on ICMB collin27)
+%  tmp = load('icbm27_headmodel');
+%  vol = tmp.vol;
+%else
+%  % userdata contains the elements of the volume conductor listbox
+%  fname = deblank(userdata(outparam{2}, :));
+%  tmp = load(fname);
+%  vol = tmp.vol;
+%end   
+%if isfield(vol, 'bnd')
+  % this is a volume conductor model based on the boundary element method
+  % compute linear interpolation matrix to get the potential on the electrodes
+  % this is only done once, and the matrix is stored with the headmodel
+  % it will then automatically be used in the forward computation
+%  fprintf(2, 'computing transfer from skin surface to electrodes...');
+%  skin = find_outermost_boundary(vol.bnd);
+%  [el] = project_elec(elc, vol.bnd(skin).pnt, vol.bnd(skin).tri);
+%  tra = transfer_elec(vol.bnd(skin).pnt, vol.bnd(skin).tri, el);
+  % construct the transfer from all surfaces combined to the electrodes
+%  vol.tra = [];
+%  for i=1:length(vol.bnd);
+%    if i==skin
+%      % add the computed transfer matrix (skin surface to electrodes)
+%      vol.tra = [vol.tra tra];
+%    else
+%      % add a zero transfer matrix (non-skin surface to electrodes)
+%      vol.tra = [vol.tra zeros(size(tra,1), size(vol.bnd(i).pnt,1))];
+%    end
+%  end
+%  fprintf(2, '\n');
+%end
+
+
+@
+
+
+1.5
+log
+@reprograming interface, programing history
+@
+text
+@d49 3
+d79 1
+a79 1
+    cb_selectelectrodes = 'tmp = select_multiple_dlg({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+@
+
+
+1.4
+log
+@added 4-sphere volume model similar to BESA
+@
+text
+@d4 2
+a5 1
+%   >> OUTEEG = pop_dipfit_settings ( INEEG, optarg )
+d10 13
+d27 1
+d49 3
+d74 70
+a143 41
+% define the callbacks for the buttons
+cb_selectelectrodes = 'tmp = select_multiple_dlg({EEG.chanlocs.labels}, eval(get(findobj(gcbf, ''tag'', ''elec''), ''string''))); set(findobj(gcbf, ''tag'', ''elec''), ''string'',[''[''  num2str(tmp) '']''])';
+cb_selectvolume     = '[fname, pname] = uigetfile(''*.*'', ''Load volume conductor''); fname = fullfile(pname, fname); tmp = strvcat(get(findobj(gcbf, ''tag'', ''vol''), ''string''), fname); set(findobj(gcbf, ''tag'', ''vol''), ''string'', tmp); set(findobj(gcbf, ''tag'', ''vol''), ''value'', size(tmp,1)); set(gcbf, ''userdata'', tmp)';
+
+geomvert = [1 1];
+
+geomhorz = {
+             [1 2 0.3]
+             [1 2 0.3]
+	   };
+
+% define each individual graphical user element
+elements  = { ...
+              { 'style' 'text'        'string' 'Electrodes used for dipolefit' } ...
+              { 'style' 'edit'        'string' defaultelectrodes  'tag' 'elec' } ...
+              { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectelectrodes } ...
+              { 'style' 'text'        'string' 'Volume conductor model' }  ...
+              { 'style' 'listbox'     'string' defaultvolume 'value' 1 'tag' 'vol' } ...
+              { 'style' 'pushbutton'  'string' '...' 'callback' cb_selectvolume } ...
+            };
+
+[outparam, userdata] = inputgui( geomhorz, elements, [], 'Dipole fit settings', [], 'normal', geomvert );
+
+if isempty(outparam)
+  % the user pressed cancel
+  return
+end
+
+if outparam{2}==1
+  % use the four-sphere headmodel taht is comparable to the BESA default
+  vol = vol4besa;
+elseif outparam{2}==2
+  % use the default one-sphere headmodel
+  vol = vol1;
+elseif outparam{2}==3
+  % use the default three-sphere headmodel
+  vol = vol3;
+elseif outparam{2}==4
+  % load the default boundary element headmodel (based on ICMB collin27)
+  tmp = load('icbm27_headmodel');
+  vol = tmp.vol;
+d145 21
+a165 5
+  % userdata contains the elements of the volume conductor listbox
+  fname = deblank(userdata(outparam{2}, :));
+  tmp = load(fname);
+  vol = tmp.vol;
+end   
+d167 16
+a182 1
+if isfield(vol, 'bnd')
+d187 4
+a190 4
+  fprintf(2, 'computing transfer from skin surface to electrodes...');
+  skin = find_outermost_boundary(vol.bnd);
+  [el] = project_elec(elc, vol.bnd(skin).pnt, vol.bnd(skin).tri);
+  tra = transfer_elec(vol.bnd(skin).pnt, vol.bnd(skin).tri, el);
+d192 12
+a203 15
+  vol.tra = [];
+  for i=1:length(vol.bnd);
+    if i==skin
+      % add the computed transfer matrix (skin surface to electrodes)
+      vol.tra = [vol.tra tra];
+    else
+      % add a zero transfer matrix (non-skin surface to electrodes)
+      vol.tra = [vol.tra zeros(size(tra,1), size(vol.bnd(i).pnt,1))];
+    end
+  end
+  fprintf(2, '\n');
+end
+
+% remember the volume conductor model
+OUTEEG.dipfit.vol = vol;
+a204 2
+% remember the electrode selection
+OUTEEG.dipfit.chansel = eval(outparam{1});
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d34 3
+d85 3
+d90 1
+a90 1
+elseif outparam{2}==2
+d93 1
+a93 1
+elseif outparam{2}==3
+@
+
+
+1.2
+log
+@removed gui elements for selection of components, reference, external electrodes
+added support for selection of different headmodels (1/3 sphere and BEM)
+changed from dipfit specific elc to chanlocs
+added gui element to support channel selection for use in dipfit
+@
+text
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a32 1
+
+d34 3
+d53 19
+a71 10
+promptstr = { strvcat('Component numbers to localize', ''), ...
+              strvcat('External electrode locations file', ''), ...
+              strvcat('External volume conductor file', ''), ...
+              strvcat('Reference electrode', ''), ...
+            };
+
+inistr    = { componentstr, ...
+              electrodestr, ...
+              volumestr, ...
+              referencestr, ...
+d74 1
+a74 1
+result = inputdlg2( promptstr, 'Dipolefit settings -- pop_dipfit_settings()', 1,  inistr, 'pop_dipfit_settings');
+d76 2
+a77 2
+if length(result)==0
+  % user pressed cancel
+d81 38
+a118 25
+components = eval( [ '[' result{1} ']' ] );
+if ndims(components)~=2 & ~any(size(components)==1)
+  error('invalid specification for number of components');
+end
+% FIXME, do something smart here
+if ~all(components==1:size(EEG.icawinv,2))
+  error('only a selection of all ICA components is currently supported')
+end
+
+electrode = result{2};
+% FIXME, do something smart here
+if ~strcmp(electrode, electrodestr)
+  error('only the default electrode definition is currently supported')
+end
+
+volume    = result{3};
+% FIXME, do something smart here
+if ~strcmp(volume, volumestr)
+  error('only the default volume conduction model is currently supported')
+end
+
+reference = result{4};
+% FIXME, do something smart here
+if ~strcmp(reference, referencestr)
+  error('only the default reference is currently supported')
+d121 2
+a122 2
+OUTEEG.dipfit.vol  = vol;
+OUTEEG.dipfit.elc  = elc;
+d124 2
+a125 2
+% FIXME, selected components are currently unsupported in the other routines
+% OUTEEG.dipfit.components = components;
+@
