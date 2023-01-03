@@ -1,7 +1,7 @@
 algorithms = {  'Amica' 'Ext. Infomax' 'Pearson' 'Infomax' ...
                  'SHIBBS'   'FastICA'    'JADE'    'TICA'    'JADE opt.'    'JADE-TD' ...
                  'FOBI'    'SOBIRO'    'EVD24'    'EVD'    'SOBI'    'icaMS' ...
-                'AMUSE'  'PCA' 'sphere' };
+                'AMUSE'  'PCA' 'Sphering' 'Picard' 'Picard-O'};
 nchans = 71;
 h = zeros(nchans,length(algorithms),14);
 
@@ -16,7 +16,7 @@ for algo=1:length(algorithms)
       %load('-mat',['ica' int2str(dat) '_72_14_simbec.mat']);
       %WS = W;
       %DATASET = dat;
-      %processdat;
+      %processdat;o
 
       if algo == 1
           %h0(:,dat) = getent(reshape(EEG.data,nchans,EEG.pnts*EEG.trials));

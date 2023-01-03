@@ -1,7 +1,6 @@
-% have to define 2 values
+% have to define 2 values% have to define 2 values
 % DATASET: sample dataset to use
 % ALGONUM: algorythm number
-
 if ~exist('pop_loadset.m')
     eeglab; close;
 end;
@@ -46,7 +45,9 @@ addpath('/home/arno/matlab/allicas/14_icalab');
 addpath('/home/arno/matlab/allicas/15_icadtutoolbox/icaMF');
 addpath('/home/arno/matlab/allicas/15_icadtutoolbox/icaML');
 addpath('/home/arno/matlab/allicas/15_icadtutoolbox/icaMS');
-addpath('/data/common/matlab/eeglab/functions/sigprocfunc/');
+%addpath('/data/common/matlab/eeglab/functions/sigprocfunc/');
+%TODO: make sure to edit this path
+addpath('/home/justin/code/eeglab_current/eeglab2021.1/functions/sigprocfunc/')
 
 % algorithms and parameters
 % -------------------------
@@ -112,6 +113,8 @@ allalgs(end+1).algo = 'sphere';        allalgs(end).speed = 0;     allalgs(end).
 allalgs(end+1).algo = 'formica';       allalgs(end).speed = 0;     allalgs(end).name = 'Amica';     allalgs(end).options = {  };
 allalgs(end+1).algo = 'binica';        allalgs(end).speed = 0;     allalgs(end).name = 'binica';    allalgs(end).options = {  };
 allalgs(end+1).algo = 'binica';        allalgs(end).speed = 0;     allalgs(end).name = 'binica ext.';    allalgs(end).options = { 'extended' 1 };
+allalgs(end+1).algo = 'picard';        allalgs(end).speed = 0;     allalgs(end).name = 'Picard';    allalgs(end).options = { 'maxiter', 500, 'mode', 'standard' };
+allalgs(end+1).algo = 'picard';        allalgs(end).speed = 0;     allalgs(end).name = 'Picard-O';    allalgs(end).options = { 'maxiter', 500, 'mode', 'ortho' };
 
 % ADD YOUR ALGORITHM HERE **************************************
 %allalgs(48).algo = 'matlab_function';   % name of Matlab function
