@@ -69,18 +69,6 @@ for ind = length(newalgs):-1:1
                 allbelow10(countdat)                       = length(find(allrv < 0.1));
                 addtoplot = addtoplot+1;
 
-                % Plotting result of a specific algo and dataset
-                % ----------------------------------------------
-                %if ALGONUM == 2 && DATASET == 2
-                %    figure; 
-                %    allallres.winv = pinv(W);
-                %    for index = 1:20
-                %        subplot(5,4,index);
-                %        topoplot(allallres.winv(:,index,1), 'chan71.loc');
-                %        title(['ext. runica ' num2str(allrv(index),3) ]);
-                %    end;
-                %    return;
-                %end;
 
             catch, 
                 disp(lasterr);
@@ -90,11 +78,7 @@ for ind = length(newalgs):-1:1
         end;
     end;
     if addtoplot == length(datasetrange)
-        %if strcmp(allalgs(ALGONUM).name, 'Picard') | strcmp(allalgs(ALGONUM).name, 'Picard-O')
-        %    allres(countplot).legend   = strcat('\color{red} ',allalgs(ALGONUM).name);
-        %else
-            allres(countplot).legend   = allalgs(ALGONUM).name;
-        %end
+        allres(countplot).legend   = allalgs(ALGONUM).name;
         allres(countplot).alginfo  = allalgs(ALGONUM);
         allres(countplot).algtime  = mean(alltime);
         fprintf( 'Algo %s: %s\n', allalgs(ALGONUM).algo, int2str(allbelow10) );
@@ -156,8 +140,6 @@ allcolors(9 ,:) = [0   0   0];
 allcolors(13,:) = [0.7 0   0.7];
 allcolors(14, :) = [0.7 1 0.7];
 allcolors(3,:)  = [];
-%allcolors = hsv(22);
-%figure; imagesc(reshape(allcolors, size(allcolors,1), 1, 3));
 
 % add EEG in the background
 % -------------------------
@@ -172,7 +154,6 @@ end;
 totallrv = totallrv';
 tmpallrv = reshape(totallrv, 71, 10, size(totallrv,2));
 totallrv = sort(totallrv,1);
-%readploteeg;
 
 % plot result of the algorithms
 % -----------------------------
@@ -186,15 +167,7 @@ figure('position', [10   10   1000   1000]);
 hh = semilogy(allresSorted(1).allrvsorted, 'w'); hold on;
 delete(hh);
 for index = 1:length(allresSorted)
-    %tmpind = find( allres.rvalgo(:,index) );
-    %tmpdat = allres.rvalgo(tmpind,index);
-    %tmpind = ~isnan(tmpdat);
-    %tmpdat = tmpdat(tmpind);
-    %abscicia = linspace(1,72, length(tmpdat));
-    %if length(tmpdat) ~= 0
-    %   h = semilogy(abscicia, tmpdat); hold on;
     h = semilogy(linspace(1,100,length(allresSorted(index).allrvsorted)), allresSorted(index).allrvsorted); hold on;
-    %h = plot([1:inc:71.8], log10(allres.rvalgo(:,index))); hold on;
     set(h, 'linewidth', 2, 'color', allcolors(mod(index-1,13)+1,:));
     if contains(allresSorted(index).legend, 'Picard-O') %we'll pay extra attention to Picard and make sure to highlight the results
         set(h, 'linestyle', '-', 'LineWidth',8,'Color',[1 .31 0]);
@@ -206,8 +179,6 @@ for index = 1:length(allresSorted)
         if index>12, set(h, 'linestyle', '--'); end;
     end
 end;
-%figure; plot(sqrt([1:71*5]), log10(allres.rvalgo'));
-%figure; semilogx(log10(allres.rvalgo'));
 hh = semilogy(linspace(1,100, 710), nan_mean(nan_mean(totallrv,2),2), 'k-.', 'linewidth', 4); hold on;
 lh = legend({ allresSorted.legend 'raw EEG' });
 view([90 270]);
@@ -219,8 +190,6 @@ set(gca, 'ytick', [0.01 0.05 0.1 0.2 1], 'yticklabel', [1 5 10 20 100]);
 set(gcf, 'paperpositionmode', 'auto');
 setfont(gcf, 'fontsize', 20);
 set(lh, 'position', [0.1598 0.2119 0.1670 0.7141]);
-%eval(sprintf('print -depsc icacomp%d-%d.eps', datasetrange(1), datasetrange(end)));
-%print -djpeg icacomp.jpg
 
 saveas(gcf,'rv_vs_percentICA.png')
 
@@ -247,9 +216,7 @@ for dat = 1:length(datasetrange)
         indb = strmatch(lower(newalgs{algo}), lower(pmi.algorithms), 'exact');
         allmir(algo) = mean(mir.mir(inda,datasetrange(dat))-mir.mir(end-1,datasetrange(dat)));
         allpmi(algo) = mean(pmi.PMI(indb,datasetrange(dat))-pmi.PMI(end,datasetrange(dat)));
-    end;
-    %allresmir(dat) = (allmir(1)/allmir(end-1)-1)*100; % (MIR_AMICA/MIR_PCA-1)*100
-    %allrespmi(dat) = (allpmi(1)/allpmi(end-1)-1)*100;    
+    end; 
     plot(allmir, allpmi, '.', 'color', allcolors(dat,:));
     [ypred alpha10 r10 slope] = myregress(allmir, allpmi);
     hold on; plot(allmir, ypred, 'k:', 'linewidth', 2, 'color', allcolors(dat,:));
@@ -261,19 +228,10 @@ ylabel('PMI');
 % --------------------------------
 %newalgs = { 'Amica'    'Infomax'    'Ext. Infomax'    'Pearson'    'SHIBBS'    'JADE'    'FastICA' 'TICA'    'JADE opt.'    'SOBI'    'JADE-TD'    'SOBIRO'  };
 clear mir allpmi allmir alldip5 alldip10 alldip15 alldip75;
-%pmi = load( '-mat', 'pmi_save.mat');
-%pmi2 = load('-mat', 'pmi_save_data.mat');
-%pmi.pmi = pmi.PMI./repmat(pmi2.PMI, [size(pmi.PMI,1) 1])*100;
-pmiOld = load( '-mat', 'pmi_stat_save_oct2011.mat');
-pmi2Old = load('-mat', 'pmi_stat_save_raw_oct2011.mat');
-%pmi.pmi = pmi.PMI*1.4427*250*2845/1000;
-%pmi.pmi = pmi.PMI./repmat(pmi2.PMIraw, [size(pmi.PMI,1) 1])*100; % in %
 if plotmir % CHANGE HERE FOR PMI VERSUS MIR
     %plot MIR
     mir = load('-mat', 'mir_new.mat');
     mir.mir = mir.mir*1.4427*250; %Convert MIR to bits/sec
-    %mir.std = std(mir.mir,0,2);
-    %compute Standard Deviation
 else 
     
     mir = load( '-mat', 'pmi_new.mat');
@@ -294,12 +252,9 @@ for algo=1:length(newalgs)
     indb   = strmatch(lower(newalgs{algo}), lower(pmi.algorithms), 'exact');
     indres = strmatch(lower(newalgs{algo}), lower({ allres.legend }), 'exact');
     
-    %allmir(:,algo) = (mir.mir(end,datasetrange)-mir.mir(inda,datasetrange))*1.4427; % 1 Nats = 2*log2(exp(1)) = 1.4427 bits | 250 is the sampling rate
+  
     allmir(:,algo) = mir.mir(inda,datasetrange); % 1 Nats = 2*log2(exp(1)) = 1.4427 bits
-    %%allpmi(:,algo) = pmi.pmi(indb,datasetrange); % 1 Nats = 2*log2(exp(1)) = 1.4427 bits
-    %%allpmi(:,algo) = pmi2.PMIraw(datasetrange)*1.4427*250*2845/1000; % 1 Nats = 2*log2(exp(1)) = 1.4427 bits
     allres(indres).mir = allmir(:,algo);
-    %%allres(indres).pmi = allpmi(:,algo);
     if isfield(mir, 'std')
         allmirstd(:,algo) = mir.std(inda,datasetrange); % 1 Nats = 2*log2(exp(1)) = 1.4427 bits
     end;
@@ -307,7 +262,6 @@ for algo=1:length(newalgs)
     inda = strmatch(newalgs{algo}, algnames, 'exact');
     alldip4(algo) = allres(inda).rvbelow4/length(datasetrange)/71*100;
     alldip5(algo) = allres(inda).rvbelow5/length(datasetrange)/71*100;
-    %alldip5dot5(algo) = allres(inda).rvbelow5dot5/length(datasetrange)/71*100;
     alldip6(algo) = allres(inda).rvbelow6/length(datasetrange)/71*100;
     alldip10(algo) = allres(inda).rvbelow10/length(datasetrange)/71*100;
     alldip15(algo) = allres(inda).rvbelow15/length(datasetrange)/71*100;
@@ -388,10 +342,6 @@ else
     myStd = std(allmir)
 end
 if 0
-    %for i=1:length(alldip10), plot(mean(allmir(:,i)), alldip75(i), '.', 'color', allcolors(i,:), 'markersize', 18); end;
-    %[ypred alpha75 r75 slope] = myregress(mean(allmir), alldip75);
-    %hold on; plot(mean(allmir), ypred, 'k', 'linewidth', 1.5);
-    
     for i=1:length(alldip10), plot(mean(allmir(:,i)), alldip10(i), '.', 'color', allcolors(i,:), 'markersize', 18); end;
     myStd = std(allmir(:,i))
     [ypred alpha10 r10 slope] = myregress(mean(allmir), alldip10);
@@ -419,12 +369,7 @@ end
 
 %% plot MI or PMI versus number of dipoles
 % --------------------------------
-%newalgs = { 'Amica'    'Infomax'    'Ext. Infomax'    'Pearson'    'SHIBBS'    'JADE'    'FastICA' 'TICA'    'JADE opt.'    'SOBI'    'JADE-TD'    'SOBIRO'  };
 clear mir allpmi allmir alldip5 alldip10 alldip15 alldip75;
-%TODO: Edit to match your saved pmi data
-pmi = load( '-mat', 'pmi_stat_save_oct2011.mat');
-pmi2 = load('-mat', 'pmi_stat_save_raw_oct2011.mat');
-pmi.pmi = pmi.PMI./repmat(pmi2.PMIraw, [size(pmi.PMI,1) 1])*100; % in %
 if plotmir % CHANGE HERE FOR PMI VERSUS MIR
     mir = load('-mat', 'mir_new.mat');
     mir.mir = mir.mir*1.4427*250; %Convert MIR to bits/sec
@@ -467,12 +412,12 @@ for algo=1:length(newalgs)
 end;
 
 figure('position', [10 10 900 900]); hold on;
-    alpha = 18% strmatch(lower('Picard'), lower(mir.algorithms), 'exact');
-    beta = 1 %strmatch(lower('Amica'), lower(mir.algorithms), 'exact');
-    gamma = 6 %strmatch(lower('FastICA'), lower(mir.algorithms), 'exact');
-
+    %TODO remove magic numbers
+    alpha = strmatch(lower('Picard'), lower(newalgs), 'exact');
+    beta = strmatch(lower('Amica'), lower(newalgs), 'exact');
+    gamma = strmatch(lower('FastICA'), lower(newalgs), 'exact');
+    delta = strmatch(lower('pca'), lower(newalgs), 'exact');
     [sortedAmica,sortIdx] = sort(allmir(:,beta),'ascend')
-    
     hold on
     alphaArr = allmir(:,alpha);
     
@@ -492,7 +437,9 @@ figure('position', [10 10 900 900]); hold on;
     plot(gammaArr(sortIdx)/1000, '.' ,'color', 'k', 'markersize', 25);
     qw{3} = plot(gammaArr(sortIdx)/1000, 'color', 'k', 'LineWidth', 1.5);
     newalgs{gamma}
-    deltaArr = allmir(:,20);
+
+
+    deltaArr = allmir(:,delta);
     plot(deltaArr(sortIdx)/1000, '.' ,'color', [0 0.5 0], 'markersize', 25);
     qw{4} = plot(deltaArr(sortIdx)/1000, 'color', [0 0.5 0], 'LineWidth', 1.5);
     xlabel('Dataset');
@@ -529,7 +476,6 @@ xlabel('RV threshold (%)');
 ylabel('significance (10^{-X})');
 setfont(gcf, 'fontsize', 20);
 yyaxis left
-%figure('position', [1015 262 277 159]);
 plot(allr2,'LineWidth',2);
 xlabel('Near dipolar cutoff (% r.v.)');
 ylabel('R^{2} value');
@@ -552,7 +498,6 @@ amicaIdx = strmatch('Amica', newalgs, 'exact');
 for algo=1:length(newalgs)
     amicaMirArr(algo) = abs(mean(allmir(:,algo))/1000 - mean(allmir(:,amicaIdx))/1000);
     mirArr(algo) = mean(allmir(:,algo))/1000;
-    %mirArrStd(algo) = std(allmir(:,algo)/1000);
 end;
 % sort A in descending order (decreasing A values) 
 % and keep the sort index in "sortIdx"
@@ -571,7 +516,7 @@ plot(1:length(newalgs), mirArr,'-o','color','k','LineWidth',1.5,'MarkerSize',8)
 
 picardNewAlgIdx = find(strcmp(newalgs(sortIdx),'Picard'));
 picardONewAlgIdx = find(strcmp(newalgs(sortIdx),'Picard-O'));
-plot(picardNewAlgIdx, mirArr(picardNewAlgIdx),'.','color','r','MarkerSize',40) %TODO: remove the magic number 4
+plot(picardNewAlgIdx, mirArr(picardNewAlgIdx),'.','color','r','MarkerSize',40)
 plot(picardONewAlgIdx, mirArr(picardONewAlgIdx),'.','color','r','MarkerSize',40)
 
 set ( gca, 'ydir', 'reverse' )
@@ -586,7 +531,6 @@ print('MI_difference','-depsc')
 if 0
 % plot MIR or PMI for each subject versus number of dipoles
 % --------------------------------
-%newalgs = { 'Amica'    'Infomax'    'Ext. Infomax'    'Pearson'    'SHIBBS'    'JADE'    'FastICA' 'TICA'    'JADE opt.'    'SOBI'    'JADE-TD'    'SOBIRO'  };
 alldip4subj = alldip4subj';
 alldip5subj = alldip5subj';
 alldip6subj = alldip6subj';
@@ -601,9 +545,7 @@ for index = 1:size(allmir,1)
     allvaly = alldip5subj(index,:);
     allvaly = [ allvaly(end) allvaly(1:end-1) ];
     sizemarker = (alldip6subj(index,:)-alldip4subj(index,:))+5;
-    %[tmr neworder] = sort(allvalx);
-    %allvalx = allvalx(neworder);
-    %allvaly = allvaly(neworder);
+
     indcolor = index;
     if indcolor == 8, indcolor = 13; elseif indcolor ==13, indcolor = 8; end;
     if plot2d == 2
@@ -612,7 +554,6 @@ for index = 1:size(allmir,1)
         for pnts = 1:length(allvalx)
             plot( allvalx(pnts), allvaly(pnts), '.', 'markersize', sizemarker(pnts), 'color', allcolors(indcolor,:)); hold on;
         end;
-        %plot( allvalx(2:end), allvaly(2:end), '-', 'color', allcolors(indcolor,:));
         [ypred tmp r2(index) slope(index)] = myregress(allvalx, allvaly);
         plot(allvalx, ypred, '-', 'linewidth', 2, 'color', allcolors(indcolor,:));
     elseif plot2d == 1
@@ -640,7 +581,6 @@ for index = 1:size(allmir,1)
             if pnts == 1, marker = 'o'; sizemarker(pnts) = sizemarker(pnts)/3; else marker = '.'; end;
             plot3( allvalx(pnts), allvalz(pnts), allvaly(pnts), marker, 'markersize', sizemarker(pnts), 'color', allcolors(indcolor,:)); hold on;
             plot3( allvalx(pnts),           0.6, allvaly(pnts), marker, 'markersize', sizemarker(pnts), 'color', greycol); hold on;
-            %plot3( allvalx(pnts), allvalz(pnts),             0, marker, 'markersize', sizemarker(pnts), 'color', greycol); hold on;
             plot3(        60000, allvalz(pnts), allvaly(pnts), marker, 'markersize', sizemarker(pnts), 'color', greycol); hold on;
         end;
         l = length(allvalx)-1;
@@ -653,14 +593,7 @@ for index = 1:size(allmir,1)
         plot3( allvalx(1:2),    [0.6 0.6], allvaly(1:2), '--', 'color', greycol);
         plot3([60000 60000], allvalz(1:2), allvaly(1:2), '--', 'color', greycol);
 
-        % plot curve
-%         if 0
-%             [ypred] = myregress(allvalx(2:end), allvaly(2:end));
-%         else
-%             p = polyfit(allvalx(2:end), allvaly(2:end),2);
-%             ypred = polyval(p, allvalx(2:end));
-%         end;
-%         plot(allvalx(2:end), ypred, '-', 'linewidth', 2, 'color', allcolors(indcolor,:));
+
         xlabel('MIR');
         ylabel('PMI');
         ylim([0.2 0.6])
@@ -684,18 +617,9 @@ end
 % ----------------------------------------------------------------
 % ----------------------------------------------------------------
 
-%return;
-
-
-%return
-
 if 1
 % show numerical results for table
 % --------------------------------
-%algorithms = {  'Amica' 'Ext. Infomax' 'Pearson' 'Infomax' 'ERICA' 'SONS' ...
-%                 'SHIBBS'   'FastICA'    'JADE'    'TICA'    'JADE opt.'    'JADE-TD' ...
-%                'eeA'  'FOBI'    'SOBIRO'    'EVD24'    'EVD'    'SOBI'    'icaMS' ...
-%                'AMUSE'  'Sphering' 'PCA'    }; % 'icaML' 'promax' 'unica'    'simbec' 
 algorithms = newalgs
 for algo=1:length(algorithms)
     inda = strmatch(algorithms{algo}, mir.algorithms, 'exact');
@@ -716,11 +640,9 @@ allmir    = allmir(sorti,:);
 meanmir = mattocell(mean(allmir,1));
 stdmir  = mattocell(std(allmir,[],1));
 alldip10tablecell = mattocell(alldip10table);
-%{ newalgs2{:}; meanmir{:}; alldip10tablecell{:} }'
 for i = 1:length(meanmir)
     fprintf('%10s\t%2.2f\t%2.1f\n', newalgs2{i}, meanmir{i}, alldip10tablecell{i})
 end;
 
-%return
 end
 
